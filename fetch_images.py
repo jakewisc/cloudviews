@@ -37,5 +37,5 @@ for f in files:
 # Save "latest.json" with most recent file name
 latest = files[-1] if files else None
 if latest:
-    with open("site/latest.json", "w") as jf:
+    with open("docs/latest.json", "w") as jf:
         json.dump({"latest_image": f"../goes_umv_frames/{latest}"}, jf)
