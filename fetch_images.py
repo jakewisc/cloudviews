@@ -33,3 +33,9 @@ for f in files:
         with open(local_path, "wb") as out:
             out.write(r.content)
     image_paths.append(local_path)
+
+# Save "latest.json" with most recent file name
+latest = files[-1] if files else None
+if latest:
+    with open("site/latest.json", "w") as jf:
+        json.dump({"latest_image": f"../goes_umv_frames/{latest}"}, jf)
