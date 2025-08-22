@@ -7,7 +7,7 @@ import os
 BASE_URL = "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/umv/GEOCOLOR/"
 
 # Local folder to store images
-SAVE_DIR = "goes_umv_frames"
+SAVE_DIR = "docs/images"
 os.makedirs(SAVE_DIR, exist_ok=True)
 
 # Get list of available files
@@ -34,8 +34,8 @@ for f in files:
             out.write(r.content)
     image_paths.append(local_path)
 
-# Save "latest.json" with most recent file name
+# Save "latest.json" inside /docs
 latest = files[-1] if files else None
 if latest:
     with open("docs/latest.json", "w") as jf:
-        json.dump({"latest_image": f"../goes_umv_frames/{latest}"}, jf)
+        json.dump({"latest_image": f"images/{latest}"}, jf)
