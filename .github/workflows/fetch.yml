@@ -2,7 +2,7 @@ name: Update GOES Images
 
 on:
   schedule:
-    - cron: "0 * * * *"   # every hour
+    - cron: "*/20 * * * *"   # every 20 minutes
   workflow_dispatch:       # allow manual runs too
 
 jobs:
