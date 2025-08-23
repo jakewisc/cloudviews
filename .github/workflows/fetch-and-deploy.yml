@@ -1,0 +1,59 @@
+# A single workflow that fetches images and deploys the site to GitHub Pages.
+name: Fetch and Deploy GOES Images
+
+# This workflow runs on a schedule and can also be triggered manually.
+on:
+  # Schedule to run every 30 minutes between 5 AM and 8 PM CST (11-23,0-2 UTC)
+  schedule:
+    - cron: '0,30 11-23,0-2 * * *'
+  # Allows for manual triggering of the workflow from the Actions tab
+  workflow_dispatch:
+
+# Grant the workflow the necessary permissions to check out the repo and deploy to Pages
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+# The main job to fetch images and deploy the website
+jobs:
+  fetch-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run fetch script
+        run: python scripts/fetch_images.py
+
+      # --- GitHub Pages Deployment Steps ---
+      - name: Configure GitHub Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          # The folder containing the files to deploy
+          path: 'docs'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
