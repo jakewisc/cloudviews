@@ -2,7 +2,7 @@ name: Update GOES Images
 
 on:
   schedule:
-    - cron: "*/30 * * * *"   # every 30 minutes
+    - cron: "0,30 11-23,0-2 * * *"   # every 30 minutes during daylight hours
   workflow_dispatch:       # allow manual runs too
 
 jobs:
