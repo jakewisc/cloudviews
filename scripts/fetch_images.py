@@ -23,7 +23,13 @@ except Exception as e:
 soup = BeautifulSoup(resp.text, "html.parser")
 
 # Collect only 2400x2400 images
-files = [link.get("href") for link in soup.find_all("a") if link.get("href") and "2400x2400.jpg" in link.get("href")]
+files = [
+    link.get("href")
+    for link in soup.find_all("a")
+    if link.get("href")
+    and link.get("href").endswith("2400x2400.jpg")
+    and "_" in link.get("href")
+]
 
 # Sort chronologically
 files.sort()
