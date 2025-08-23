@@ -33,7 +33,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run fetch script
-        run: python fetch_images.py
+        run: python scripts/fetch_images.py
 
       - name: Commit and push changes
         run: |
