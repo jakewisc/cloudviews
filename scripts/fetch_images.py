@@ -53,11 +53,20 @@ for f in files:
             continue
     image_paths.append(local_path)
 
+"""
 # Save "latest.json" inside /docs
 if files:
     latest = files[-1]
     with open(LATEST_JSON, "w") as jf:
         json.dump({"latest_image": f"images/{latest}"}, jf, indent=2)
+"""
+
+# Save a list of all current images to docs/images.json
+if files:
+    # We use relative paths for the front-end
+    relative_paths = [f"images/{f}" for f in files]
+    with open(os.path.join(ROOT_DIR, "docs", "images.json"), "w") as jf:
+        json.dump(relative_paths, jf, indent=2)
 
 # Remove old images from docs/images/ if they are not in the current list
 existing_files = set(os.listdir(SAVE_DIR))
