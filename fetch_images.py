@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
-import imageio.v2 as imageio
 import os
+import json
 
 # NOAA directory for UMV GEOCOLOR imagery
 BASE_URL = "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/umv/GEOCOLOR/"
