@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let imagePaths = [];
     let currentIndex = 0;
     let animationInterval;
-    const frameRate = 1000 / 15; // 15 frames per second
+    const frameRate = 1000 / 5; // 5 frames per second
 
     async function fetchImages() {
         try {
