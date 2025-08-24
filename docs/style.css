@@ -1,21 +1,51 @@
+/* Color Palette: White, Light Grey (#ededed), Blue (#2280de), Dark Blue (#134c92) */
+
 body {
-  font-family: Arial, sans-serif;
-  text-align: center;
-  background-color: #111;
-  color: #eee;
-  margin: 0;
-  padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: center;
+    background-color: #ededed; /* Light Grey background */
+    color: #134c92; /* Dark Blue text for contrast */
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 h1 {
-  margin-bottom: 20px;
-  font-size: 1.5em;
+    margin-bottom: 25px;
+    font-size: 1.8em;
+    color: #2280de; /* Main Blue title color */
+    border-bottom: 3px solid #2280de;
+    padding-bottom: 10px;
 }
 
-#image-container img {
-  max-width: 95%;
-  height: auto;
-  border: 2px solid #444;
-  border-radius: 8px;
-  box-shadow: 0 0 10px #000;
+/* --- Image Container and Scaling --- */
+
+.image-container {
+    /* Center the container and limit its size relative to the viewport */
+    max-width: 90vw; 
+    width: 100%;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+#goes-image {
+    /* Ensure the image fills the container, maintaining aspect ratio */
+    width: 100%;
+    height: auto;
+    
+    /* Initially hide the image until data is loaded */
+    display: none; 
+
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Loading Message Style */
+#loading-message {
+    color: #134c92;
+    padding: 50px 0;
+    font-size: 1.2em;
 }
