@@ -1,8 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     const goesImage = document.getElementById('goes-image');
+    const loadingMessage = document.getElementById('loading-message'); // Get the loading message element
     
     // --- Configuration ---
-    const ANIMATION_FPS = 10;
+    const ANIMATION_FPS = 5;
     const FRAME_RATE_MS = 1000 / ANIMATION_FPS; // 200ms per frame
     const PRELOAD_BUFFER_SIZE = 10; // Load 10 frames ahead of the current one
 
@@ -24,15 +25,16 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log(`Fetched ${imagePaths.length} image paths.`);
             
             if (imagePaths.length > 0) {
-                // Set the initial image source (this will start the load process)
+                // Set the initial image source (this starts the load process)
                 goesImage.src = imagePaths[0]; 
                 
-                // Immediately start preloading and then the animation
+                // Immediately start preloading the rest of the buffer
                 await preloadFrames(0); 
                 startAnimation();
             }
         } catch (error) {
             console.error('Failed to fetch image list:', error);
+            loadingMessage.textContent = "Error loading data. Please try refreshing.";
         }
     }
 
@@ -42,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     async function preloadFrames(startIndex) {
         const pathsToPreload = [];
+        // Calculate the end index, ensuring we don't go past the total number of images
         const endIndex = Math.min(imagePaths.length, startIndex + PRELOAD_BUFFER_SIZE);
         
         // 1. Identify which paths need loading
@@ -53,11 +56,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         if (pathsToPreload.length === 0) {
-            console.log('Preload buffer is full or no new images to load.');
+            // console.log('Preload buffer is full or no new images to load.');
             return;
         }
 
-        console.log(`Preloading ${pathsToPreload.length} frames...`);
+        // console.log(`Preloading ${pathsToPreload.length} frames...`);
 
         // 2. Create an array of Promises, one for each image load
         const loadPromises = pathsToPreload.map(path => {
@@ -77,7 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // 3. Wait for all images in the current batch to finish loading
-        await Promise.all(loadPromises.map(p => p.catch(() => {}))); // Use .catch to prevent crash if one fails
+        // Use .catch(() => {}) so that a single failed image doesn't stop Promise.all
+        await Promise.all(loadPromises.map(p => p.catch(() => {})));
     }
 
     /**
@@ -90,6 +94,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const nextImage = imageCache[nextPath];
         
         if (nextImage) {
+            // Check for the first time the image is displayed
+            if (loadingMessage.style.display !== 'none') {
+                loadingMessage.style.display = 'none';
+                goesImage.style.display = 'block'; 
+            }
+
             // Display the image using the cached Image object source
             goesImage.src = nextImage.src; 
             
@@ -100,10 +110,14 @@ document.addEventListener('DOMContentLoaded', () => {
             preloadFrames(currentIndex);
 
         } else {
-            // This is a safeguard: If the image isn't in cache, the system is behind.
-            // Stop animation to prevent excessive skipping/flicker and focus on loading.
+            // Safeguard: If the image isn't in cache, stop animation and load it.
             console.warn(`Frame ${currentIndex} not in cache. Stopping animation to load.`);
             clearInterval(animationInterval);
+            
+            loadingMessage.textContent = "Buffering... Please wait.";
+            loadingMessage.style.display = 'block';
+            goesImage.style.display = 'none';
+
             // Attempt to load the missing frame immediately
             preloadFrames(currentIndex).then(() => {
                 // If successful, restart animation
@@ -121,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         // Run updateImage at the specified frame rate
         animationInterval = setInterval(updateImage, FRAME_RATE_MS);
-        console.log(`Animation restarted at ${ANIMATION_FPS} FPS.`);
+        console.log(`Animation started at ${ANIMATION_FPS} FPS.`);
     }
     
     // --- Initialization ---
