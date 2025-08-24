@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Configuration ---
     const ANIMATION_FPS = 9;
     const FRAME_RATE_MS = 1000 / ANIMATION_FPS;
-    const PRELOAD_BUFFER_SIZE = 10; // Load 10 frames ahead of the current one
+    const PRELOAD_BUFFER_SIZE = 20; // Load x # of frames ahead of the current one
 
     // --- State Variables ---
     let imagePaths = []; // Array of all image URLs (from images.json)
