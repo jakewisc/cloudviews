@@ -1,10 +1,10 @@
-/* Color Palette: White, Light Grey (#ededed), Blue (#2280de), Dark Blue (#134c92) */
+/* Color Palette: White (#ffffff), Dark Grey (#1e1e1e), Blue (#2280de), Dark Blue (#134c92) */
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     text-align: center;
-    background-color: #ededed; /* Light Grey background */
-    color: #134c92; /* Dark Blue text for contrast */
+    background-color: #1e1e1e; /* Dark Grey background */
+    color: #ffffff; /* White text for contrast */
     margin: 0;
     padding: 20px;
     display: flex;
@@ -38,14 +38,14 @@ h1 {
     /* Initially hide the image until data is loaded */
     display: none; 
 
-    border: 1px solid #ccc;
+    border: 1px solid #444; /* Darker border for contrast */
     border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Stronger shadow visibility */
 }
 
 /* Loading Message Style */
 #loading-message {
-    color: #134c92;
+    color: #2280de; /* Bright blue for visibility */
     padding: 50px 0;
     font-size: 1.2em;
 }
