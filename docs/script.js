@@ -3,8 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingMessage = document.getElementById('loading-message'); // Get the loading message element
     
     // --- Configuration ---
-    const ANIMATION_FPS = 5;
-    const FRAME_RATE_MS = 1000 / ANIMATION_FPS; // 200ms per frame
+    const ANIMATION_FPS = 9;
+    const FRAME_RATE_MS = 1000 / ANIMATION_FPS;
     const PRELOAD_BUFFER_SIZE = 10; // Load 10 frames ahead of the current one
 
     // --- State Variables ---
