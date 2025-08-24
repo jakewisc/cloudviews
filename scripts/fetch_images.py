@@ -4,14 +4,17 @@ import os
 import json
 import concurrent.futures
 import logging
+from PIL import Image
+import io
 
 # Set up basic logging for better feedback
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# --- Constants ---
+# --- Constants and Paths ---
 BASE_URL = "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/umv/GEOCOLOR/"  # NOAA directory for UMV GEOCOLOR imagery
 IMAGE_SIZE_FILTER = "2400x2400.jpg"
-MAX_IMAGES_TO_KEEP = 75
+MAX_IMAGES_TO_KEEP = 60
+WEBP_QUALITY = 90  # WebP compression quality (0-100)
 
 # Paths relative to repo root (script is inside /scripts)
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -19,25 +22,40 @@ ROOT_DIR = os.path.dirname(SCRIPT_DIR)
 SAVE_DIR = os.path.join(ROOT_DIR, "docs", "images")
 IMAGES_JSON = os.path.join(ROOT_DIR, "docs", "images.json")
 
-# Helper Function for Concurrent Downloads
+# --- Helper Function for Concurrent Downloads ---
 def download_image(file_name):
-    """Downloads a single image file, skipping if it already exists."""
-    url = BASE_URL + file_name
-    local_path = os.path.join(SAVE_DIR, file_name)
+    """
+    Downloads a single image file, converts it to WebP, and saves it. 
+    Returns the local path of the saved WebP file if successful, otherwise None.
+    """
+    webp_filename = file_name.replace(".jpg", ".webp")
+    local_webp_path = os.path.join(SAVE_DIR, webp_filename)
 
-    if os.path.exists(local_path):
-        logging.info(f"Skipping {file_name}, already exists.")
-        return local_path
+    if os.path.exists(local_webp_path):
+        logging.info(f"Skipping {webp_filename}, already exists.")
+        return local_webp_path
     
     try:
+        # 1. Download the file content
+        url = BASE_URL + file_name
         r = requests.get(url, timeout=30)
         r.raise_for_status()
-        with open(local_path, "wb") as out:
-            out.write(r.content)
-        logging.info(f"Downloaded {file_name}")
-        return local_path
-    except Exception as e:
-        logging.error(f"Failed to download {url}: {e}")
+        
+        # 2. Open the image content using io.BytesIO and Pillow
+        image_data = io.BytesIO(r.content)
+        img = Image.open(image_data)
+        
+        # 3. Save as WebP
+        img.save(local_webp_path, 'webp', quality=WEBP_QUALITY)
+        
+        logging.info(f"Downloaded and converted {file_name} to {webp_filename}.")
+        return local_webp_path
+        
+    except requests.exceptions.RequestException as req_error:
+        logging.error(f"Failed to download {url}: {req_error}")
+        return None
+    except Exception as conv_error:
+        logging.error(f"Failed to convert or save image {file_name}: {conv_error}")
         return None
 
 
@@ -75,12 +93,13 @@ files_to_have = files_to_have[-MAX_IMAGES_TO_KEEP:]
 logging.info("Starting concurrent downloads...")
 image_paths = []
 with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+    # Use files_to_have (the original .jpg filenames) as input
     results = executor.map(download_image, files_to_have)
     for path in results:
         if path:
             image_paths.append(path)
 
-# 3. Use the list of successfully downloaded/existing images to determine which to keep
+# 3. Use the list of successfully downloaded/existing WebP files to determine which to keep
 successful_files = [os.path.basename(p) for p in image_paths]
 keep_files_set = set(successful_files)
 
@@ -98,8 +117,8 @@ if delete_files:
         except Exception as e:
             logging.error(f"Failed to remove {old_path}: {e}")
 
-# 5. Get the final, clean list of files that exist in the directory
-final_files_on_disk = sorted([f for f in os.listdir(SAVE_DIR) if f.endswith(IMAGE_SIZE_FILTER)])
+# 5. Get the final, clean list of *WebP* files that exist in the directory
+final_files_on_disk = sorted([f for f in os.listdir(SAVE_DIR) if f.endswith(".webp")])
 
 # 6. Write the JSON file based on the final list of files
 if final_files_on_disk:
