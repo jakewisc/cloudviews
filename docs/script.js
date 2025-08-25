@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
             clearInterval(animationInterval);
         }
         isPlaying = true;
-        playPauseBtn.textContent = '◼ Pause';
+        playPauseBtn.textContent = '■ Pause';
         animationInterval = setInterval(updateImage, FRAME_RATE_MS);
         console.log(`Animation started at ${ANIMATION_FPS} FPS.`);
     }
