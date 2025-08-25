@@ -21,7 +21,6 @@ h1 {
 }
 
 /* --- Image Container and Scaling --- */
-
 .image-container {
     /* Center the container and limit its size relative to the viewport */
     max-width: 90vw; 
@@ -48,4 +47,34 @@ h1 {
     color: #134c92;
     padding: 50px 0;
     font-size: 1.2em;
+}
+
+/* --- Playback Controls Styling --- */
+.controls-container {
+    margin-top: 20px;
+    margin-bottom: 40px;
+    display: flex;
+    gap: 15px; /* Space between buttons */
+    justify-content: center;
+}
+
+.controls-container button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s, opacity 0.3s;
+    /* Use your project colors */
+    background-color: #2280de; /* Blue */
+    color: white;
+}
+
+.controls-container button:hover {
+    background-color: #134c92; /* Dark Blue */
+}
+
+.controls-container button:disabled {
+    opacity: 0.5;
+    cursor: default;
 }
