@@ -6,13 +6,18 @@
   <title>GOES Image Sequence</title>
   <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
-  
 </head>
 <body>
-  <h1>Up-to-date GOES-19 UMV GEOCOLOR Sequence</h1>
+  <h1>Up-to-date GOES-19 UMV GeoColor Sequence</h1>
+  <p>5 hour loop – 60 images – 20 minute update</p>
   <div class="image-container">
     <p id="loading-message">Loading satellite data...</p>
     <img id="goes-image" src="" alt="GOES Image Sequence">
+  </div>
+  <div class="controls-container">
+    <button id="prev-btn">◀ Previous</button>
+    <button id="play-pause-btn">◼ Pause</button>
+    <button id="next-btn">Next ▶</button>
   </div>
   <script src="script.js"></script>
 </body>
