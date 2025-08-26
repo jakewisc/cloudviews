@@ -16,7 +16,7 @@ concurrency:
 
 # Grant the workflow the necessary permissions for deployment
 permissions:
-  contents: read  # switch between write/read if committing to repo
+  contents: write  # switch between write/read if committing to repo
   pages: write
   id-token: write
 
