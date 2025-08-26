@@ -28,7 +28,7 @@ h1 {
     width: 100%;
     margin-bottom: 20px;
     position: relative;
-    aspect-ratio: 1/1;
+    aspect-ratio: 1 / 1;
 }
 
 #goes-image {
