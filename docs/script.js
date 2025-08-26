@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const playPauseBtn = document.getElementById('play-pause-btn');
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
-    const scrubber = document.getElementById('scrubber'); // NEW: Scrubber element
+    const scrubber = document.getElementById('scrubber');
 
     // --- Configuration ---
     const ANIMATION_FPS = 9;
@@ -131,8 +131,9 @@ document.addEventListener('DOMContentLoaded', () => {
             
             loadingMessage.style.display = 'none';
             goesImage.style.display = 'block';
+            document.querySelector('.controls-container').style.display = 'flex';
             
-            // NEW: Setup and show the scrubber
+            // Setup and show the scrubber
             scrubber.max = imagePaths.length - 1;
             scrubber.parentElement.style.display = 'block';
 
