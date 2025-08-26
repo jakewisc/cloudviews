@@ -1,11 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Elements ---
+    // --- DOM Elements ---
     const goesImage = document.getElementById('goes-image');
     const loadingMessage = document.getElementById('loading-message');
     const playPauseBtn = document.getElementById('play-pause-btn');
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
     const scrubber = document.getElementById('scrubber');
+    const controlsContainer = document.querySelector('.controls-container');
 
     // --- Configuration ---
     const ANIMATION_FPS = 9;
@@ -13,18 +14,50 @@ document.addEventListener('DOMContentLoaded', () => {
     const LAST_FRAME_HOLD_TIME_MS = 1000;
 
     // --- State Variables ---
-    let imagePaths = []; 
-    let imageCache = {}; 
+    let imagePaths = [];
+    let imageCache = {};
     let currentIndex = 0;
-    let isPlaying = true; 
-
-    // --- State for requestAnimationFrame ---
+    let isPlaying = true;
     let animationFrameId;
     let lastFrameTime = 0;
+    
+    // --- Core Animation Loop ---
 
-    // -- rAF State ---
-    let isScrubbing = false;
-    let targetFrameIndex = 0;
+    function runAnimationLoop(currentTime) {
+        if (!isPlaying) return;
+
+        const timeSinceLastFrame = currentTime - lastFrameTime;
+        const isLastFrame = (currentIndex === imagePaths.length - 1);
+        const currentFrameInterval = isLastFrame ? LAST_FRAME_HOLD_TIME_MS : FRAME_INTERVAL_MS;
+
+        if (timeSinceLastFrame >= currentFrameInterval) {
+            lastFrameTime = currentTime;
+            const nextIndex = (currentIndex + 1) % imagePaths.length;
+            updateUI(nextIndex);
+        }
+        
+        animationFrameId = requestAnimationFrame(runAnimationLoop);
+    }
+    
+    // --- UI Update and Display Functions ---
+
+    /**
+     * Central function to update all UI elements based on the frame index.
+     * @param {number} index - The index of the frame to display.
+     */
+    function updateUI(index) {
+        currentIndex = index;
+        scrubber.value = index;
+        displayFrame(index);
+    }
+
+    function displayFrame(index) {
+        const path = imagePaths[index];
+        const cachedImage = imageCache[path];
+        if (cachedImage) {
+            goesImage.src = cachedImage.src;
+        }
+    }
     
     // --- Animation Control Functions ---
     
@@ -54,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function prevFrame() {
-        stopAnimation(); 
+        stopAnimation();
         const newIndex = (currentIndex - 1 + imagePaths.length) % imagePaths.length;
         updateUI(newIndex);
     }
@@ -64,47 +97,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const newIndex = (currentIndex + 1) % imagePaths.length;
         updateUI(newIndex);
     }
-
-    // --- UI Update and Display Functions ---
-
-    /**
-     * Central function to update all UI elements based on the frame index.
-     * @param {number} index - The index of the frame to display.
-     */
-    function updateUI(index) {
-        currentIndex = index;
-        scrubber.value = index; // Sync scrubber position
-        displayFrame(index);
+    
+    // --- Scrubber Handling Functions ---
+    
+    function handleScrubberInput() {
+        stopAnimation();
+        const newIndex = parseInt(scrubber.value, 10);
+        updateUI(newIndex);
     }
-
-    function displayFrame(index) {
-        const path = imagePaths[index];
-        const cachedImage = imageCache[path];
-        if (cachedImage) {
-            goesImage.src = cachedImage.src; 
-        }
-    }
-
-    /**
-     * REFACTORED: Manages the animation loop using requestAnimationFrame.
-     * @param {DOMHighResTimeStamp} currentTime - Provided by requestAnimationFrame
-     */
-    function runAnimationLoop(currentTime) {
-        if (!isPlaying) return;
-
-        const timeSinceLastFrame = currentTime - lastFrameTime;
-        const isLastFrame = (currentIndex === imagePaths.length - 1);
-        const currentFrameInterval = isLastFrame ? LAST_FRAME_HOLD_TIME_MS : FRAME_INTERVAL_MS;
-
-        if (timeSinceLastFrame >= currentFrameInterval) {
-            lastFrameTime = currentTime;
-            const nextIndex = (currentIndex + 1) % imagePaths.length;
-            updateUI(nextIndex); // Use updateUI to sync scrubber
-        }
-        
-        animationFrameId = requestAnimationFrame(runAnimationLoop);
-    }
-
+    
     // --- Loading and Initialization ---
 
     async function loadAllImages() {
@@ -119,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 img.onload = () => {
                     loadedCount++;
                     loadingMessage.textContent = `Loading Image ${loadedCount}/${totalCount}...`;
-                    imageCache[path] = img; 
+                    imageCache[path] = img;
                     resolve();
                 };
                 img.onerror = () => {
@@ -135,16 +136,12 @@ document.addEventListener('DOMContentLoaded', () => {
             
             loadingMessage.style.display = 'none';
             goesImage.style.display = 'block';
-            document.querySelector('.controls-container').style.display = 'flex';
+            controlsContainer.style.display = 'flex';
             
-            // Setup and show the scrubber
             scrubber.max = imagePaths.length - 1;
-            scrubber.parentElement.style.display = 'block';
 
-            // Display the first frame and sync UI
             updateUI(0);
             
-            // Start animation
             isPlaying = false;
             togglePlayPause();
 
@@ -167,50 +164,17 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingMessage.textContent = "Error loading data. Please try refreshing.";
         }
     }
-
-    // --- Scrubber Handling ---
     
-    function scrubberUpdateLoop() {
-        if (!isScrubbing) return; // Stop the loop if we're not scrubbing
+    // --- Initialization ---
 
-        // Only update the DOM if the target frame has changed
-        if (currentIndex !== targetFrameIndex) {
-            updateUI(targetFrameIndex);
-        }
+    function initialize() {
+        playPauseBtn.addEventListener('click', togglePlayPause);
+        prevBtn.addEventListener('click', prevFrame);
+        nextBtn.addEventListener('click', nextFrame);
+        scrubber.addEventListener('change', handleScrubberInput);
 
-        // Continue the loop
-        requestAnimationFrame(scrubberUpdateLoop);
+        fetchImages();
     }
     
-    function startScrubbing() {
-        isScrubbing = true;
-        stopAnimation();
-        requestAnimationFrame(scrubberUpdateLoop); // Kick off the update loop
-    }
-    
-    function stopScrubbing() {
-        isScrubbing = false;
-        // The update loop will automatically stop on its next check.
-        // We also use the 'change' event to make a final, precise update.
-        const finalIndex = parseInt(scrubber.value, 10);
-        updateUI(finalIndex);
-    }
-
-    
-    // Handle user interaction with the scrubber
-    function handleScrubberInput() {
-        targetFrameIndex = parseInt(scrubber.value, 10);
-    }
-    
-    // --- Initialization & Event Listeners ---
-    
-    playPauseBtn.addEventListener('click', togglePlayPause);
-    prevBtn.addEventListener('click', prevFrame);
-    nextBtn.addEventListener('click', nextFrame);
-    
-    scrubber.addEventListener('mousedown', startScrubbing);
-    scrubber.addEventListener('input', handleScrubberInput);
-    scrubber.addEventListener('change', stopScrubbing); // Use 'change' as a reliable "end" event
-
-    fetchImages();
+    initialize();
 });
