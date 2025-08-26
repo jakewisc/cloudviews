@@ -30,7 +30,6 @@ h1 {
     }
 
 #goes-image {
-    /* Ensure the image fills the container, maintaining aspect ratio */
     width: 100%;
     display: none; 
     border: 1px solid #ccc;
