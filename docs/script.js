@@ -5,7 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const playPauseBtn = document.getElementById('play-pause-btn');
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
-    
+    const scrubber = document.getElementById('scrubber'); // NEW: Scrubber element
+
     // --- Configuration ---
     const ANIMATION_FPS = 9;
     const FRAME_INTERVAL_MS = 1000 / ANIMATION_FPS;
@@ -24,31 +25,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Animation Control Functions ---
     
     function startAnimation() {
-        if (isPlaying) return; // Prevent multiple loops
+        if (isPlaying) return;
         isPlaying = true;
         playPauseBtn.textContent = '■ Pause';
-        console.log(`Animation started at ${ANIMATION_FPS} FPS.`);
-        
-        // Reset the timer and start the loop
         lastFrameTime = performance.now();
         animationFrameId = requestAnimationFrame(runAnimationLoop);
     }
 
     function stopAnimation() {
-        if (!isPlaying) return; // Already stopped
+        if (!isPlaying) return;
         isPlaying = false;
         playPauseBtn.textContent = '▶ Play';
-        
         cancelAnimationFrame(animationFrameId);
-        console.log('Animation paused.');
     }
 
     function togglePlayPause() {
-        // We check isPlaying's current state to decide the action
         if (isPlaying) {
             stopAnimation();
         } else {
-            // Only start if images are available
             if (imagePaths.length > 0) {
                 startAnimation();
             }
@@ -57,17 +51,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function prevFrame() {
         stopAnimation(); 
-        currentIndex = (currentIndex - 1 + imagePaths.length) % imagePaths.length;
-        displayFrame(currentIndex);
+        const newIndex = (currentIndex - 1 + imagePaths.length) % imagePaths.length;
+        updateUI(newIndex);
     }
 
     function nextFrame() {
         stopAnimation();
-        currentIndex = (currentIndex + 1) % imagePaths.length;
-        displayFrame(currentIndex);
+        const newIndex = (currentIndex + 1) % imagePaths.length;
+        updateUI(newIndex);
     }
 
-    // --- Image Display/Cache Functions ---
+    // --- UI Update and Display Functions ---
+
+    /**
+     * Central function to update all UI elements based on the frame index.
+     * @param {number} index - The index of the frame to display.
+     */
+    function updateUI(index) {
+        currentIndex = index;
+        scrubber.value = index; // Sync scrubber position
+        displayFrame(index);
+    }
 
     function displayFrame(index) {
         const path = imagePaths[index];
@@ -88,20 +92,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const isLastFrame = (currentIndex === imagePaths.length - 1);
         const currentFrameInterval = isLastFrame ? LAST_FRAME_HOLD_TIME_MS : FRAME_INTERVAL_MS;
 
-        // Check if enough time has passed to show the next frame
         if (timeSinceLastFrame >= currentFrameInterval) {
-            lastFrameTime = currentTime; // Update the time for the next frame calculation
-            
-            // Move to the next index and display it
-            currentIndex = (currentIndex + 1) % imagePaths.length;
-            displayFrame(currentIndex);
+            lastFrameTime = currentTime;
+            const nextIndex = (currentIndex + 1) % imagePaths.length;
+            updateUI(nextIndex); // Use updateUI to sync scrubber
         }
         
-        // Request the next frame to continue the loop
         animationFrameId = requestAnimationFrame(runAnimationLoop);
     }
 
-    // --- Load All Images at Once with Progress Counter (Original Logic) ---
+    // --- Loading and Initialization ---
 
     async function loadAllImages() {
         if (imagePaths.length === 0) return;
@@ -130,13 +130,17 @@ document.addEventListener('DOMContentLoaded', () => {
             await Promise.all(loadPromises);
             
             loadingMessage.style.display = 'none';
-            goesImage.style.display = 'block'; 
-
-            // Display the first frame immediately before starting the loop
-            displayFrame(currentIndex);
+            goesImage.style.display = 'block';
             
-            // Start animation (isPlaying is initially true)
-            isPlaying = false; // Set to false so togglePlayPause properly starts it
+            // NEW: Setup and show the scrubber
+            scrubber.max = imagePaths.length - 1;
+            scrubber.parentElement.style.display = 'block';
+
+            // Display the first frame and sync UI
+            updateUI(0);
+            
+            // Start animation
+            isPlaying = false;
             togglePlayPause();
 
         } catch (error) {
@@ -158,12 +162,20 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingMessage.textContent = "Error loading data. Please try refreshing.";
         }
     }
+
+    // Handle user interaction with the scrubber
+    function handleScrubberInput() {
+        stopAnimation();
+        const newIndex = parseInt(scrubber.value, 10);
+        updateUI(newIndex);
+    }
     
     // --- Initialization & Event Listeners ---
     
     playPauseBtn.addEventListener('click', togglePlayPause);
     prevBtn.addEventListener('click', prevFrame);
     nextBtn.addEventListener('click', nextFrame);
+    scrubber.addEventListener('input', handleScrubberInput); // NEW: Listen for scrubber changes
 
     fetchImages();
 });
