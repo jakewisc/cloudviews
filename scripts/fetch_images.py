@@ -19,7 +19,7 @@ WEBP_QUALITY = 90  # WebP compression quality (0-100)
 # Paths relative to repo root (script is inside /scripts)
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(SCRIPT_DIR)
-SAVE_DIR = os.path.join(ROOT_DIR, "docs", "images")
+SAVE_DIR = os.path.join(ROOT_DIR, "docs", "images", "umv")
 IMAGES_JSON = os.path.join(ROOT_DIR, "docs", "images.json")
 
 # --- Helper Function for Concurrent Downloads ---
@@ -122,7 +122,7 @@ final_files_on_disk = sorted([f for f in os.listdir(SAVE_DIR) if f.endswith(".we
 
 # 6. Write the JSON file based on the final list of files
 if final_files_on_disk:
-    relative_paths = [f"images/{f}" for f in final_files_on_disk]
+    relative_paths = [f"images/umv/{f}" for f in final_files_on_disk]
     with open(IMAGES_JSON, "w") as jf:
         json.dump(relative_paths, jf, indent=2)
     logging.info(f"Updated {IMAGES_JSON} with {len(final_files_on_disk)} image paths.")
