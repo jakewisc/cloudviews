@@ -10,15 +10,22 @@
 <body>
   <h1>GOES-19 UMV GeoColor Sequence</h1>
   <p>5 hour loop – Updates every 20 minutes</p>
+  
   <div class="image-container">
     <p id="loading-message">Loading satellite data...</p>
     <img id="goes-image" src="" alt="GOES Image Sequence">
   </div>
+  
   <div class="controls-container">
     <button id="prev-btn"> ◀ </button>
     <button id="play-pause-btn">■ Pause</button>
     <button id="next-btn"> ▶ </button>
   </div>
+
+  <div class="scrubber-container">
+    <input type="range" id="scrubber" min="0" value="0" step="1">
+  </div>
+  
   <script src="script.js"></script>
 </body>
 </html>
