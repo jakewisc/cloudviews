@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 BASE_URL = "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/umv/GEOCOLOR/"  # NOAA directory for UMV GEOCOLOR imagery
 IMAGE_SIZE_FILTER = "2400x2400.jpg"
 MAX_IMAGES_TO_KEEP = 60
-WEBP_QUALITY = 90  # WebP compression quality (0-100)
+WEBP_QUALITY = 85  # WebP compression quality (0-100)
 
 # Paths relative to repo root (script is inside /scripts)
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
