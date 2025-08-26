@@ -44,6 +44,20 @@ h1 {
     font-size: 1.2em;
 }
 
+/* --- Scrubber Styling --- */
+.scrubber-container {
+    width: 80%;
+    max-width: 700px;
+    margin-bottom: 40px;
+    display: none;
+}
+
+#scrubber {
+    width: 100%;
+    cursor: pointer;
+    accent-color: #2280de;
+}
+
 /* --- Playback Controls Styling --- */
 .controls-container {
     margin-top: 20px;
@@ -71,18 +85,4 @@ h1 {
 .controls-container button:disabled {
     opacity: 0.5;
     cursor: default;
-}
-
-/* --- Scrubber Styling --- */
-.scrubber-container {
-    width: 80%;
-    max-width: 700px;
-    margin-bottom: 40px;
-    display: none;
-}
-
-#scrubber {
-    width: 100%;
-    cursor: pointer;
-    accent-color: #2280de;
 }
