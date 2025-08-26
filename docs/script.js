@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
     playPauseBtn.addEventListener('click', togglePlayPause);
     prevBtn.addEventListener('click', prevFrame);
     nextBtn.addEventListener('click', nextFrame);
-    scrubber.addEventListener('input', handleScrubberInput); // NEW: Listen for scrubber changes
+    scrubber.addEventListener('change', handleScrubberInput);
 
     fetchImages();
 });
