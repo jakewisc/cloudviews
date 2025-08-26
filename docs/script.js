@@ -22,6 +22,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let animationFrameId;
     let lastFrameTime = 0;
 
+    // -- rAF State ---
+    let isScrubbing = false;
+    let targetFrameIndex = 0;
+    
     // --- Animation Control Functions ---
     
     function startAnimation() {
@@ -164,11 +168,38 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // --- Scrubber Handling ---
+    
+    function scrubberUpdateLoop() {
+        if (!isScrubbing) return; // Stop the loop if we're not scrubbing
+
+        // Only update the DOM if the target frame has changed
+        if (currentIndex !== targetFrameIndex) {
+            updateUI(targetFrameIndex);
+        }
+
+        // Continue the loop
+        requestAnimationFrame(scrubberUpdateLoop);
+    }
+    
+    function startScrubbing() {
+        isScrubbing = true;
+        stopAnimation();
+        requestAnimationFrame(scrubberUpdateLoop); // Kick off the update loop
+    }
+    
+    function stopScrubbing() {
+        isScrubbing = false;
+        // The update loop will automatically stop on its next check.
+        // We also use the 'change' event to make a final, precise update.
+        const finalIndex = parseInt(scrubber.value, 10);
+        updateUI(finalIndex);
+    }
+
+    
     // Handle user interaction with the scrubber
     function handleScrubberInput() {
-        stopAnimation();
-        const newIndex = parseInt(scrubber.value, 10);
-        updateUI(newIndex);
+        targetFrameIndex = parseInt(scrubber.value, 10);
     }
     
     // --- Initialization & Event Listeners ---
@@ -176,7 +207,10 @@ document.addEventListener('DOMContentLoaded', () => {
     playPauseBtn.addEventListener('click', togglePlayPause);
     prevBtn.addEventListener('click', prevFrame);
     nextBtn.addEventListener('click', nextFrame);
-    scrubber.addEventListener('change', handleScrubberInput);
+    
+    scrubber.addEventListener('mousedown', startScrubbing);
+    scrubber.addEventListener('input', handleScrubberInput);
+    scrubber.addEventListener('change', stopScrubbing); // Use 'change' as a reliable "end" event
 
     fetchImages();
 });
