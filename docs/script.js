@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let imageCache = {}; 
     let currentIndex = 0;
     let animationInterval;
-    let isPlaying = true; // Start in playing state
+    let isPlaying = true;
 
     // --- Animation Control Functions ---
     
@@ -60,10 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Image Display/Cache Functions ---
 
-    /**
-     * Displays a specific frame from the cache.
-     * @param {number} index - The index of the frame to display.
-     */
     function displayFrame(index) {
         const path = imagePaths[index];
         const cachedImage = imageCache[path];
@@ -73,26 +69,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    /**
-     * Updates the displayed image based on the animation interval.
-     */
     function updateImage() {
         if (imagePaths.length === 0) return;
 
-        // Display the frame and advance the index
         displayFrame(currentIndex);
         currentIndex = (currentIndex + 1) % imagePaths.length;
     }
     
-    // --- Load All Images at Once ---
+    // --- Load All Images at Once with Progress Counter ---
 
     async function loadAllImages() {
         if (imagePaths.length === 0) return;
+        
+        let loadedCount = 0;
+        const totalCount = imagePaths.length;
 
+        // Create an array of Promises, one for each image
         const loadPromises = imagePaths.map(path => {
             return new Promise((resolve, reject) => {
                 const img = new Image();
                 img.onload = () => {
+                    loadedCount++;
+                    loadingMessage.textContent = `Loading Image ${loadedCount}/${totalCount}...`;
                     imageCache[path] = img; 
                     resolve();
                 };
@@ -105,15 +103,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         try {
-            // Wait for all images to finish loading
             await Promise.all(loadPromises);
-            console.log("All images loaded.");
-
-            // Hide the loading message and show the image
+            
+            // Once all images are loaded, hide the message and show the animation
             loadingMessage.style.display = 'none';
             goesImage.style.display = 'block'; 
 
-            // Start the animation
             startAnimation();
 
         } catch (error) {
