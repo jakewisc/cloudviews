@@ -24,7 +24,7 @@ h1 {
 .image-container {
     /* Center the container and limit its size relative to the viewport */
     max-width: 90vw; 
-    max-height: 90vw;
+    max-height: 90vh;
     width: 100%;
     margin-bottom: 20px;
     position: relative;
@@ -34,7 +34,7 @@ h1 {
 #goes-image {
     /* Ensure the image fills the container, maintaining aspect ratio */
     width: 100%;
-    height: auto;
+    height: 100%;
     
     /* Initially hide the image until data is loaded */
     display: none; 
@@ -54,8 +54,8 @@ h1 {
 /* --- Playback Controls Styling --- */
 .controls-container {
     margin-top: 20px;
-    margin-bottom: 40px;
-    display: flex;
+    margin-bottom: 20px;
+    display: none;
     gap: 15px; /* Space between buttons */
     justify-content: center;
 }
@@ -67,7 +67,6 @@ h1 {
     font-size: 1em;
     cursor: pointer;
     transition: background-color 0.3s, opacity 0.3s;
-    /* Use your project colors */
     background-color: #2280de; /* Blue */
     color: white;
 }
@@ -86,12 +85,11 @@ h1 {
     width: 80%;
     max-width: 700px;
     margin-bottom: 40px;
-    display: none; /* Initially hidden until images are loaded */
+    display: none;
 }
 
 #scrubber {
     width: 100%;
     cursor: pointer;
-    /* Style the slider track and thumb color to match the theme */
     accent-color: #2280de;
 }
