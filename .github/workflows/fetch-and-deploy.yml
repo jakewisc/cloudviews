@@ -45,12 +45,12 @@ jobs:
       - name: Run fetch script
         run: python scripts/fetch_images.py
 
-      ## This step saves the new images and JSON file to the Git branch.
-      #- name: Commit generated files to repository
-      #  uses: stefanzweifel/git-auto-commit-action@v5
-      #  with:
-      #    file_pattern: 'docs/images/umv/ docs/images.json'
-      #    commit_message: "Update GOES images and JSON [skip ci]"
+      # This step saves the new images and JSON file to the Git branch.
+      - name: Commit generated files to repository
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          file_pattern: 'docs/images/ docs/images.json'
+          commit_message: "Update GOES images and JSON [skip ci]"
 
       # --- GitHub Pages Deployment Steps ---
       - name: Configure GitHub Pages
