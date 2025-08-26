@@ -24,9 +24,11 @@ h1 {
 .image-container {
     /* Center the container and limit its size relative to the viewport */
     max-width: 90vw; 
+    max-height: 90vw;
     width: 100%;
     margin-bottom: 20px;
     position: relative;
+    aspect-ratio: 1/1;
 }
 
 #goes-image {
@@ -77,4 +79,19 @@ h1 {
 .controls-container button:disabled {
     opacity: 0.5;
     cursor: default;
+}
+
+/* --- Scrubber Styling --- */
+.scrubber-container {
+    width: 80%;
+    max-width: 700px;
+    margin-bottom: 40px;
+    display: none; /* Initially hidden until images are loaded */
+}
+
+#scrubber {
+    width: 100%;
+    cursor: pointer;
+    /* Style the slider track and thumb color to match the theme */
+    accent-color: #2280de;
 }
