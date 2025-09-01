@@ -29,19 +29,19 @@ IMAGE_TARGETS = [
         "name": "umv", # Upper Midwest Valley
         "base_url": "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/umv/GEOCOLOR/",
         "save_dir": os.path.join(ROOT_DIR, "docs", "images", "umv"),
-        "json_file": os.path.join(ROOT_DIR, "docs", "images", "umv", "images_umv.json")
+        "json_file": os.path.join(ROOT_DIR, "docs", "images", "images_umv.json")
     },
     {
         "name": "nr", # Northern Rockies
         "base_url": "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/nr/GEOCOLOR/",
         "save_dir": os.path.join(ROOT_DIR, "docs", "images", "nr"),
-        "json_file": os.path.join(ROOT_DIR, "docs", "images", "nr", "images_nr.json")
+        "json_file": os.path.join(ROOT_DIR, "docs", "images", "images_nr.json")
     },
     {
         "name": eus", # U.S. East Coast
         "base_url": "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/eus/GEOCOLOR/",
         "save_dir": os.path.join(ROOT_DIR, "docs", "images", "eus"),
-        "json_file": os.path.join(ROOT_DIR, "docs", "images", "eus", "images_eus.json")
+        "json_file": os.path.join(ROOT_DIR, "docs", "images", "images_eus.json")
     }
     # Example for another region:
     # {
