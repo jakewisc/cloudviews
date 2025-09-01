@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchImages() {
         try {
-            const response = await fetch('images.json');
+            const response = await fetch('images/images_umv.json');
             imagePaths = await response.json();
             
             if (imagePaths.length > 0) {
