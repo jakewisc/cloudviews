@@ -38,7 +38,7 @@ IMAGE_TARGETS = [
         "json_file": os.path.join(ROOT_DIR, "docs", "images", "images_nr.json")
     },
     {
-        "name": eus", # U.S. East Coast
+        "name": "eus", # U.S. East Coast
         "base_url": "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/eus/GEOCOLOR/",
         "save_dir": os.path.join(ROOT_DIR, "docs", "images", "eus"),
         "json_file": os.path.join(ROOT_DIR, "docs", "images", "images_eus.json")
