@@ -6,51 +6,77 @@ import concurrent.futures
 import logging
 from PIL import Image
 import io
+from functools import partial
 
 # Set up basic logging for better feedback
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# --- Constants and Paths ---
-BASE_URL = "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/umv/GEOCOLOR/"  # NOAA directory for UMV GEOCOLOR imagery
+# --- Constants ---
 IMAGE_SIZE_FILTER = "2400x2400.jpg"
 MAX_IMAGES_TO_KEEP = 60
-WEBP_QUALITY = 85  # WebP compression quality (0-100)
+WEBP_QUALITY = 80  # WebP compression quality (0-100)
+MAX_WORKERS = 10   # Number of concurrent download threads
 
-# Paths relative to repo root (script is inside /scripts)
+# --- Base Paths (relative to the script's location) ---
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(SCRIPT_DIR)
-SAVE_DIR = os.path.join(ROOT_DIR, "docs", "images", "umv")
-IMAGES_JSON = os.path.join(ROOT_DIR, "docs", "images.json")
 
-# --- Helper Function for Concurrent Downloads ---
-def download_image(file_name):
+# --- NEW: Configuration for all image output targets ---
+# This list is the "single source of truth". To add a new region,
+# just add a new dictionary entry here.
+IMAGE_TARGETS = [
+    {
+        "name": "umv", # Upper Midwest Valley
+        "base_url": "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/umv/GEOCOLOR/",
+        "save_dir": os.path.join(ROOT_DIR, "docs", "images", "umv"),
+        "json_file": os.path.join(ROOT_DIR, "docs", "images", "umv", "images_umv.json")
+    },
+    {
+        "name": "nr", # Northern Rockies
+        "base_url": "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/nr/GEOCOLOR/",
+        "save_dir": os.path.join(ROOT_DIR, "docs", "images", "nr"),
+        "json_file": os.path.join(ROOT_DIR, "docs", "images", "nr", "images_nr.json")
+    },
+    {
+        "name": eus", # U.S. East Coast
+        "base_url": "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/eus/GEOCOLOR/",
+        "save_dir": os.path.join(ROOT_DIR, "docs", "images", "eus"),
+        "json_file": os.path.join(ROOT_DIR, "docs", "images", "eus", "images_eus.json")
+    }
+    # Example for another region:
+    # {
+    #     "name": "sp", # Southern Plains
+    #     "base_url": "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/sp/GEOCOLOR/",
+    #     "save_dir": os.path.join(ROOT_DIR, "docs", "images", "sp"),
+    #     "json_file": os.path.join(ROOT_DIR, "docs", "images_sp.json")
+    # }
+]
+
+def download_image(file_name, base_url, save_dir):
     """
-    Downloads a single image file, converts it to WebP, and saves it. 
+    Downloads a single image file, converts it to WebP, and saves it.
     Returns the local path of the saved WebP file if successful, otherwise None.
     """
     webp_filename = file_name.replace(".jpg", ".webp")
-    local_webp_path = os.path.join(SAVE_DIR, webp_filename)
+    local_webp_path = os.path.join(save_dir, webp_filename)
 
     if os.path.exists(local_webp_path):
-        logging.info(f"Skipping {webp_filename}, already exists.")
+        # This is logged at the DEBUG level to avoid cluttering the output
+        logging.debug(f"Skipping {webp_filename}, already exists.")
         return local_webp_path
-    
+
     try:
-        # 1. Download the file content
-        url = BASE_URL + file_name
+        url = base_url + file_name
         r = requests.get(url, timeout=30)
         r.raise_for_status()
-        
-        # 2. Open the image content using io.BytesIO and Pillow
+
         image_data = io.BytesIO(r.content)
         img = Image.open(image_data)
-        
-        # 3. Save as WebP
         img.save(local_webp_path, 'webp', quality=WEBP_QUALITY)
-        
+
         logging.info(f"Downloaded and converted {file_name} to {webp_filename}.")
         return local_webp_path
-        
+
     except requests.exceptions.RequestException as req_error:
         logging.error(f"Failed to download {url}: {req_error}")
         return None
@@ -58,75 +84,77 @@ def download_image(file_name):
         logging.error(f"Failed to convert or save image {file_name}: {conv_error}")
         return None
 
+def process_target(target):
+    """
+    Processes a single image target from the configuration.
+    This includes fetching, downloading, converting, and cleaning files.
+    """
+    target_name = target["name"]
+    base_url = target["base_url"]
+    save_dir = target["save_dir"]
+    json_file = target["json_file"]
 
-# --- Main Script Logic ---
-os.makedirs(SAVE_DIR, exist_ok=True)
+    logging.info(f"--- Starting processing for target: {target_name.upper()} ---")
+    os.makedirs(save_dir, exist_ok=True)
 
-# 1. Get list of all files available online
-try:
-    logging.info("Fetching image list from NOAA directory...")
-    resp = requests.get(BASE_URL, timeout=20)
-    resp.raise_for_status()
-except Exception as e:
-    raise SystemExit(f"Error fetching NOAA directory: {e}")
+    # 1. Get list of files from the NOAA directory
+    try:
+        logging.info(f"Fetching image list from {base_url}...")
+        resp = requests.get(base_url, timeout=20)
+        resp.raise_for_status()
+    except Exception as e:
+        logging.error(f"Error fetching directory for {target_name.upper()}: {e}")
+        return # Skip this target if we can't get the file list
 
-soup = BeautifulSoup(resp.text, "html.parser")
+    soup = BeautifulSoup(resp.text, "html.parser")
+    files_to_have = sorted([
+        link.get("href") for link in soup.find_all("a")
+        if link.get("href") and IMAGE_SIZE_FILTER in link.get("href")
+    ])[-MAX_IMAGES_TO_KEEP:]
 
-# Collect only images of specified resolution (e.g. 2400x2400.jpg)
-files_to_have = [
-    link.get("href")
-    for link in soup.find_all("a")
-    if link.get("href")
-    and IMAGE_SIZE_FILTER in link.get("href")
-    and "_" in link.get("href")
-]
+    logging.info(f"Found {len(files_to_have)} images for {target_name.upper()}.")
 
-logging.info(f"Found {len(files_to_have)} images. Keeping the {MAX_IMAGES_TO_KEEP} most recent.")
+    # 2. Concurrently download, convert, and save images
+    image_paths = []
+    download_task = partial(download_image, base_url=base_url, save_dir=save_dir)
 
-# Sort chronologically
-files_to_have.sort()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        results = executor.map(download_task, files_to_have)
+        image_paths.extend(path for path in results if path)
 
-# Keep only the specified number (e.g. 50)
-files_to_have = files_to_have[-MAX_IMAGES_TO_KEEP:]
+    # 3. Clean up old images from the save directory
+    successful_files = {os.path.basename(p) for p in image_paths}
+    for existing_file in os.listdir(save_dir):
+		# Skip any file that is not a .webp image
+        if not existing_file.endswith('.webp'):
+            continue
+        if existing_file not in successful_files:
+            try:
+                os.remove(os.path.join(save_dir, existing_file))
+                logging.info(f"Removed old image: {existing_file}")
+            except Exception as e:
+                logging.error(f"Failed to remove {existing_file}: {e}")
 
-# 2. Concurrently download all the files we want to have
-logging.info("Starting concurrent downloads...")
-image_paths = []
-with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-    # Use files_to_have (the original .jpg filenames) as input
-    results = executor.map(download_image, files_to_have)
-    for path in results:
-        if path:
-            image_paths.append(path)
+    # 4. Write the final list of relative paths to the JSON file
+    final_files_on_disk = sorted(os.listdir(save_dir))
+    relative_paths = [f"images/{target_name}/{f}" for f in final_files_on_disk]
 
-# 3. Use the list of successfully downloaded/existing WebP files to determine which to keep
-successful_files = [os.path.basename(p) for p in image_paths]
-keep_files_set = set(successful_files)
-
-# 4. Remove any images that are not in the successful set
-existing_files_on_disk = set(os.listdir(SAVE_DIR))
-delete_files = existing_files_on_disk - keep_files_set
-
-if delete_files:
-    logging.info(f"Found {len(delete_files)} old images to remove.")
-    for old in delete_files:
-        old_path = os.path.join(SAVE_DIR, old)
-        try:
-            os.remove(old_path)
-            logging.info(f"Removed old image: {old}")
-        except Exception as e:
-            logging.error(f"Failed to remove {old_path}: {e}")
-
-# 5. Get the final, clean list of *WebP* files that exist in the directory
-final_files_on_disk = sorted([f for f in os.listdir(SAVE_DIR) if f.endswith(".webp")])
-
-# 6. Write the JSON file based on the final list of files
-if final_files_on_disk:
-    relative_paths = [f"images/umv/{f}" for f in final_files_on_disk]
-    with open(IMAGES_JSON, "w") as jf:
+    with open(json_file, "w") as jf:
         json.dump(relative_paths, jf, indent=2)
-    logging.info(f"Updated {IMAGES_JSON} with {len(final_files_on_disk)} image paths.")
-else:
-    with open(IMAGES_JSON, "w") as jf:
-        json.dump([], jf, indent=2)
-    logging.warning(f"No images found. {IMAGES_JSON} was written with an empty list.")
+
+    if relative_paths:
+        logging.info(f"Updated {json_file} with {len(relative_paths)} image paths.")
+    else:
+        logging.warning(f"No images found for {target_name.upper()}. Wrote an empty list to {json_file}.")
+    
+    logging.info(f"--- Finished processing for target: {target_name.upper()} ---")
+
+def main():
+    """Main function to iterate through and process all configured targets."""
+    logging.info("Starting image fetching and processing script.")
+    for target in IMAGE_TARGETS:
+        process_target(target)
+    logging.info("All targets processed. Script finished.")
+
+if __name__ == "__main__":
+    main()
