@@ -26,29 +26,47 @@ ROOT_DIR = os.path.dirname(SCRIPT_DIR)
 # just add a new dictionary entry here.
 IMAGE_TARGETS = [
     {
+        "name": "pnw", # Pacific Northwest
+        "base_url": "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/pnw/GEOCOLOR/",
+        "save_dir": os.path.join(ROOT_DIR, "docs", "images", "pnw"),
+        "json_file": os.path.join(ROOT_DIR, "docs", "images", "images_pnw.json")
+    },
+	{
+        "name": "psw", # Pacific Southwest
+        "base_url": "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/psw/GEOCOLOR/",
+        "save_dir": os.path.join(ROOT_DIR, "docs", "images", "psw"),
+        "json_file": os.path.join(ROOT_DIR, "docs", "images", "images_psw.json")
+    },
+	{
+        "name": "nr", # Northern Rockies
+        "base_url": "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/nr/GEOCOLOR/",
+        "save_dir": os.path.join(ROOT_DIR, "docs", "images", "nr"),
+        "json_file": os.path.join(ROOT_DIR, "docs", "images", "images_nr.json")
+    },
+	{
         "name": "umv", # Upper Midwest Valley
         "base_url": "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/umv/GEOCOLOR/",
         "save_dir": os.path.join(ROOT_DIR, "docs", "images", "umv"),
         "json_file": os.path.join(ROOT_DIR, "docs", "images", "images_umv.json")
     },
     {
-        "name": "nr", # Northern Rockies
-        "base_url": "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/nr/GEOCOLOR/",
-        "save_dir": os.path.join(ROOT_DIR, "docs", "images", "nr"),
-        "json_file": os.path.join(ROOT_DIR, "docs", "images", "images_nr.json")
-    },
-    {
         "name": "ne", # Northeast
         "base_url": "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/ne/GEOCOLOR/",
         "save_dir": os.path.join(ROOT_DIR, "docs", "images", "ne"),
         "json_file": os.path.join(ROOT_DIR, "docs", "images", "images_ne.json")
+    },
+    {
+        "name": "se", # Southeast
+        "base_url": "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/se/GEOCOLOR/",
+        "save_dir": os.path.join(ROOT_DIR, "docs", "images", "se"),
+        "json_file": os.path.join(ROOT_DIR, "docs", "images", "images_se.json")
     }
     # Example for another region:
     # {
     #     "name": "sp", # Southern Plains
     #     "base_url": "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/sp/GEOCOLOR/",
     #     "save_dir": os.path.join(ROOT_DIR, "docs", "images", "sp"),
-    #     "json_file": os.path.join(ROOT_DIR, "docs", "images_sp.json")
+    #     "json_file": os.path.join(ROOT_DIR, "docs", "images", "images_sp.json")
     # }
 ]
 
