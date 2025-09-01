@@ -109,7 +109,7 @@ def process_target(target):
     soup = BeautifulSoup(resp.text, "html.parser")
     files_to_have = sorted([
         link.get("href") for link in soup.find_all("a")
-        if link.get("href") and IMAGE_SIZE_FILTER in link.get("href") and '_' in link.get(“href”)
+        if link.get("href") and IMAGE_SIZE_FILTER in link.get("href") and "_" in link.get("href")
     ])[-MAX_IMAGES_TO_KEEP:]
 
     logging.info(f"Found {len(files_to_have)} images for {target_name.upper()}.")
