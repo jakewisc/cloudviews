@@ -6,11 +6,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
     const scrubber = document.getElementById('scrubber');
+    const scriptTag = document.getElementById('main-script'); 
 
     // --- Configuration ---
     const ANIMATION_FPS = 9;
     const FRAME_INTERVAL_MS = 1000 / ANIMATION_FPS;
     const LAST_FRAME_HOLD_TIME_MS = 1000;
+    const JSON_PATH = scriptTag.dataset.regionJson;
 
     // --- State Variables ---
     let imagePaths = []; 
@@ -152,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchImages() {
         try {
-            const response = await fetch('images/images_umv.json');
+            const response = await fetch(JSON_PATH);
             imagePaths = await response.json();
             
             if (imagePaths.length > 0) {
