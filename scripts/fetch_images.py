@@ -168,10 +168,20 @@ def process_target(target):
     logging.info(f"--- Finished processing for target: {target_name.upper()} ---")
 
 def main():
-    """Main function to iterate through and process all configured targets."""
+    """Main function to run all configured targets in parallel."""
     logging.info("Starting image fetching and processing script.")
-    for target in IMAGE_TARGETS:
-        process_target(target)
+    
+    # Use ThreadPoolExecutor to process all targets concurrently
+    with concurrent.futures.ThreadPoolExecutor(max_workers=len(IMAGE_TARGETS)) as executor:
+        futures = {executor.submit(process_target, target) for target in IMAGE_TARGETS}
+        # Wait for all futures to complete
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                # Get the result (or handle exceptions)
+                future.result() 
+            except Exception as e:
+                logging.error(f"A target processing task failed: {e}")
+    
     logging.info("All targets processed. Script finished.")
 
 if __name__ == "__main__":
