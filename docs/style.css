@@ -24,17 +24,13 @@ h1 {
 /* --- Image Container and Scaling --- */
 .image-container {
     /* Center the container and limit its size relative to the viewport */
-    /* MODIFICATION: Removed width properties. The container will now size to its content. */
     margin-bottom: 20px;
     position: relative;
 }
 
 #goes-image {
-    /* MODIFICATION: Sizing logic moved here for responsive scaling. */
-    /* The image will not exceed 90% of the viewport width OR 65% of the viewport height, */
-    /* ensuring it fits on both mobile (width-constrained) and desktop (height-constrained) screens. */
     max-width: 90vw;
-    max-height: 65vh; /* This is the key fix for desktop screens */
+    max-height: 70vh; /* Key fix for desktop screens */
     height: auto; /* Maintain aspect ratio */
     width: auto; /* Maintain aspect ratio */
 
