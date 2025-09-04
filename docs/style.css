@@ -30,7 +30,7 @@ h1 {
 
 #goes-image {
     max-width: 90vw;
-    max-height: 70vh; /* Key fix for desktop screens */
+    max-height: 65vh;
     height: auto; /* Maintain aspect ratio */
     width: auto; /* Maintain aspect ratio */
 
@@ -76,7 +76,7 @@ h1 {
     font-size: 1em;
     cursor: pointer;
     transition: background-color 0.3s, opacity 0.3s;
-    background-color: #2280de; /* Blue */
+    background-color: #2280de; /* Main Blue */
     color: white;
 }
 
