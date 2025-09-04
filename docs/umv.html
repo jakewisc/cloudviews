@@ -8,25 +8,31 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="manifest" href="manifest.json">
-  <script src="script.js" id="main-script" data-region-json="images/images_umv.json"></script>
+  <script src="script.js" id="main-script" data-region-json="images/images_umv.json" defer></script>
 </head>
 <body>
-  <h1>GOES-19 UMV GeoColor Sequence</h1>
-  <p>5 hour loop – Updates every 20 minutes</p>
-  
-  <div class="image-container">
-    <p id="loading-message">Loading satellite data...</p>
-    <img id="goes-image" src="" alt="GOES Image Sequence">
-  </div>
-  
-  <div class="scrubber-container">
-    <input type="range" id="scrubber" min="0" value="0" step="1">
-  </div>
-  
-  <div class="controls-container">
-    <button id="prev-btn"> ◀ </button>
-    <button id="play-pause-btn">■ Pause</button>
-    <button id="next-btn"> ▶ </button>
-  </div>
+  <main class="content-wrapper">
+    <header class="page-header">
+      <h1>GOES-19 UMV GeoColor Sequence</h1>
+      <p>5 hour loop – Updates every 20 minutes</p>
+    </header>
+    
+    <div class="image-container">
+      <p id="loading-message">Loading satellite data...</p>
+      <img id="goes-image" src="" alt="GOES Image Sequence">
+    </div>
+    
+    <div class="controls-wrapper">
+      <div class="scrubber-container">
+        <input type="range" id="scrubber" min="0" value="0" step="1" aria-label="Image sequence scrubber">
+      </div>
+      
+      <div class="controls-container">
+        <button id="prev-btn" aria-label="Previous frame"> ◀ </button>
+        <button id="play-pause-btn" aria-label="Play or Pause">■ Pause</button>
+        <button id="next-btn" aria-label="Next frame"> ▶ </button>
+      </div>
+    </div>
+  </main>
 </body>
 </html>
