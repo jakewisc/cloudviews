@@ -48,7 +48,7 @@ IMAGE_TARGETS = [
         "base_url": "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/sp/GEOCOLOR/",
         "save_dir": os.path.join(ROOT_DIR, "docs", "images", "sp"),
         "json_file": os.path.join(ROOT_DIR, "docs", "images", "images_sp.json")
-	}
+	},
 	{
         "name": "umv", # Upper Midwest Valley
         "base_url": "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/umv/GEOCOLOR/",
