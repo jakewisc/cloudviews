@@ -53,6 +53,7 @@ h1 {
     max-width: 700px;
     margin-bottom: 20px;
     display: none;
+    touch-action: manipulation;
 }
 
 #scrubber {
@@ -78,6 +79,7 @@ h1 {
     transition: background-color 0.3s, opacity 0.3s;
     background-color: #2280de; /* Main Blue */
     color: white;
+    touch-action: manipulation;
 }
 
 .controls-container button:hover {
