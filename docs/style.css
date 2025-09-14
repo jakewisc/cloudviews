@@ -23,21 +23,27 @@ h1 {
 
 /* --- Image Container and Scaling --- */
 .image-container {
-    /* Center the container and limit its size relative to the viewport */
     margin-bottom: 20px;
     position: relative;
+    touch-action: none; 
+    overflow: hidden;
+    border-radius: 8px;
 }
 
 #goes-image {
     max-width: 90vw;
     max-height: 65vh;
-    height: auto; /* Maintain aspect ratio */
-    width: auto; /* Maintain aspect ratio */
-
+    height: auto;
+    width: auto;
     display: none;
     border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    position: relative; 
+    z-index: 1;
+    -webkit-touch-callout: none; /* Prevents callout menu on iOS */
+    -webkit-user-select: none;   /* Safari */
+    -moz-user-select: none;      /* Firefox */
+    -ms-user-select: none;       /* IE/Edge */
+    user-select: none;
 }
 
 /* Loading Message Style */
@@ -65,7 +71,7 @@ h1 {
 .controls-container {
     margin-bottom: 40px;
     display: none;
-    gap: 15px; /* Space between buttons */
+    gap: 15px;
     justify-content: center;
 }
 
