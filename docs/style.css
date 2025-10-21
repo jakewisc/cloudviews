@@ -39,10 +39,10 @@ h1 {
     border: 1px solid #ccc;
     position: relative; 
     z-index: 1;
-    -webkit-touch-callout: none; /* Prevents callout menu on iOS */
-    -webkit-user-select: none;   /* Safari */
-    -moz-user-select: none;      /* Firefox */
-    -ms-user-select: none;       /* IE/Edge */
+    /* -webkit-touch-callout: none; Prevents callout menu on iOS */
+    /* -webkit-user-select: none;   Safari */
+    /* -moz-user-select: none;      Firefox */
+    /* -ms-user-select: none;       IE/Edge */
     user-select: none;
 }
 
