@@ -25,7 +25,7 @@ h1 {
 .image-container {
     margin-bottom: 20px;
     position: relative;
-    touch-action: none; 
+    /* touch-action: none;  Prevents pinch-to-zoom */
     overflow: hidden;
     border-radius: 8px;
 }
